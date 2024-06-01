@@ -1,185 +1,20 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# # Data Acquisition 
-
-# In[12]:
+# In[38]:
 
 
-#importing Libraries
-
-import pandas as pd  # type: ignore
-import matplotlib.pyplot as plt  # type: ignore
-import seaborn as sns   # type: ignore
-
-
-# In[4]:
+# Importing Libraries
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 
-#importing dataset
+# In[39]:
 
+
+# Importing dataset
 Housing = pd.read_csv("C:/Users/vipin/Downloads/housing_data.csv")
-
-
-# In[5]:
-
-
-#printing dataset
-Housing
-
-
-# In[6]:
-
-
-#printing top 10 Entries
-
-Housing.head(10)
-
-
-# In[5]:
-
-
-#printing last 10 Entries
-
-Housing.tail(10)
-
-
-# In[6]:
-
-
-#Getting DataType Info
-
-Housing.info()
-
-
-# In[7]:
-
-
-#Generate descriptive statistics
-
-Housing.describe()
-
-
-# In[8]:
-
-
-#Finding Null Value
-
-Housing.isnull()
-
-
-# In[9]:
-
-
-#Summing of Null Value
-
-Housing.isnull().sum()
-
-
-# In[10]:
-
-
-# Drop Unnamed columns
-
-columns_to_drop = ['Unnamed: 0']
-Housing = Housing.drop(columns=columns_to_drop, axis=1)
-
-Housing
-
-
-# In[11]:
-
-
-# Columns to display
-
-Housing.columns
-
-
-# In[12]:
-
-
-#counting rows and columns
-
-Housing.shape
-
-
-# In[13]:
-
-
-#Finding data types
-
-Housing.dtypes
-
-
-# # Data Wrangling
-
-# In[10]:
-
-
-#Finding mean
-
-
-mean_values = Housing.mean(numeric_only=True)
-print(mean_values)
-
-
-# In[8]:
-
-
-#Finding median
-
-median_values = Housing.median(numeric_only=True)
-print(median_values)
-
-
-# In[16]:
-
-
-# Handle missing values
-Housing.fillna(Housing.mean(numeric_only=True), inplace=True)
-
-
-# In[17]:
-
-
-Housing
-
-
-# In[18]:
-
-
-# Handle missing values
-Housing.fillna(Housing.median(numeric_only=True), inplace=True)
-
-
-# In[19]:
-
-
-Housing
-
-
-# In[20]:
-
-
-# Handle missing values
-Housing.fillna(Housing.mode(numeric_only=True), inplace=True)
-
-
-# In[21]:
-
-
-Housing
-
-
-# In[27]:
-
-
-# Remove duplicates
-Housing.drop_duplicates(inplace=True)
-
-
-# In[28]:
-
 
 Housing
 
@@ -187,38 +22,166 @@ Housing
 # In[40]:
 
 
-#Remove rows with negative prices
-
-Housing= Housing[Housing['SalePrice'] > 0]
+# Printing top 10 Entries
+print(Housing.head(10))
 
 
 # In[41]:
 
 
+# Printing last 10 Entries
+print(Housing.tail(10))
+
+
+# In[42]:
+
+
+# Getting DataType Info
+print(Housing.info())
+
+
+# In[43]:
+
+
+# Generate descriptive statistics
+print(Housing.describe())
+
+
+# In[44]:
+
+
+# Drop Unnamed columns
+columns_to_drop = ['Unnamed: 0']
+Housing = Housing.drop(columns=columns_to_drop, axis=1)
+
+print(Housing)
+
+
+# In[45]:
+
+
+# Columns to display
+print(Housing.columns)
+
+
+# In[46]:
+
+
+# Counting rows and columns
+print(Housing.shape)
+
+
+# In[47]:
+
+
+# Finding data types
+print(Housing.dtypes)
+
+
+# # Data Wrangling
+
+# In[49]:
+
+
+# Finding Null Values
+print(Housing.isnull().sum())
+
+
+# In[50]:
+
+
+# Fill missing values with appropriate strategies
+Housing.fillna({
+    'Electrical': 'No Electrical',
+    'GarageYrBlt': Housing['GarageYrBlt'].median(),
+}, inplace=True)
+
+
+# In[51]:
+
+
+# Convert categorical features to 'category' dtype
+categorical_columns = Housing.select_dtypes(include=['object']).columns
+print("Categorical Columns:")
+print(categorical_columns)
+
+for col in categorical_columns:
+    Housing[col] = Housing[col].astype('category')
+
+
+# In[52]:
+
+
+# Display the dataframe info
+print(Housing.info())
+
+
+# In[53]:
+
+
+# Finding mean
+mean_values = Housing.mean(numeric_only=True)
+print(mean_values)
+
+
+# In[54]:
+
+
+# Finding median
+median_values = Housing.median(numeric_only=True)
+print(median_values)
+
+
+# In[55]:
+
+
+# Handle missing values
+Housing.fillna(Housing.mean(numeric_only=True), inplace=True)
+Housing.fillna(Housing.median(numeric_only=True), inplace=True)
+
+
+# In[56]:
+
+
+# Remove duplicates
+Housing.drop_duplicates(inplace=True)
+
+
+# In[57]:
+
+
+# Remove rows with negative prices
+Housing = Housing[Housing['SalePrice'] > 0]
+
+
+# In[60]:
+
+
 Housing
 
 
-# In[ ]:
+# In[63]:
 
 
+# Creating a new feature for price per square foot
+Housing['Price Per SqFt'] = Housing['SalePrice'] / Housing['LotArea']
 
 
+# # Data Visualization
 
-# # Data Visualisation
-
-# In[22]:
+# In[61]:
 
 
-# Explore the distribution of house prices using a histogram  #Univariate Analysis
+# Explore the distribution of house prices using a histogram             #Univariate Analysis
 plt.figure(figsize=(10, 6))
-sns.histplot(Housing['SalePrice'], bins=30, kde=True, color="Orange")
+sns.histplot(Housing['SalePrice'], bins=30, kde=True, color="orange")
 plt.title('Distribution of House Prices')
 plt.xlabel('SalePrice')
 plt.ylabel('Frequency')
 plt.show()
 
 
-# In[42]:
+# In[64]:
 
 
 plt.figure(figsize=(10, 6))
@@ -229,10 +192,10 @@ plt.ylabel('Frequency')
 plt.show()
 
 
-# In[49]:
+# In[65]:
 
 
-# Explore the relationship between variables using a correlation matrix   #Multivariate
+# Explore the relationship between variables using a correlation matrix                 #Multivariate Analysis
 correlation_matrix = Housing.select_dtypes(include='number').corr()
 plt.figure(figsize=(25, 25))
 sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm')
@@ -240,17 +203,11 @@ plt.title('Correlation Matrix')
 plt.show()
 
 
-# In[ ]:
-
-
-
-
-
-# In[13]:
+# In[69]:
 
 
 # Explore relationships between various features and house prices
-plt.figure(figsize=(18, 12))  # Increase the figure size for better visibility
+plt.figure(figsize=(18, 12))
 
 plt.subplot(2, 3, 1)  # 2 rows, 3 columns, 1st subplot
 sns.scatterplot(x='TotalBsmtSF', y='SalePrice', data=Housing)
@@ -280,71 +237,53 @@ plt.tight_layout()
 plt.show()
 
 
-# In[ ]:
-
-
-
-
-
-# In[96]:
+# In[70]:
 
 
 # Explore relationships between key features and house prices
-
-plt.figure(figsize=(18, 6))  # Increase the figure size for better visibility
+plt.figure(figsize=(18, 6))
 
 plt.subplot(1, 4, 1)  # 1 row, 4 columns, 1st subplot
 sns.scatterplot(x='BsmtFullBath', y='SalePrice', data=Housing)
-plt.title('Basement full bathrooms vs. Sale Price')
+plt.title('Basement Full Bathrooms vs. Sale Price')
 
 plt.subplot(1, 4, 2)  # 1 row, 4 columns, 2nd subplot
 sns.scatterplot(x='BsmtHalfBath', y='SalePrice', data=Housing)
-plt.title('Basement Half bathrooms vs. Sale Price')
+plt.title('Basement Half Bathrooms vs. Sale Price')
 
-
-plt.subplot(1,4, 3)  # 1 row, 4 columns, 2nd subplot
+plt.subplot(1, 4, 3)  # 1 row, 4 columns, 3rd subplot
 sns.scatterplot(x='HalfBath', y='SalePrice', data=Housing)
-plt.title('Half bathrooms vs. Sale Price')
+plt.title('Half Bathrooms vs. Sale Price')
 
-
-plt.subplot(1,4, 4)  # 1 row, 4 columns, 2nd subplot
+plt.subplot(1, 4, 4)  # 1 row, 4 columns, 4th subplot
 sns.scatterplot(x='FullBath', y='SalePrice', data=Housing)
-plt.title('full bathrooms vs. Sale Price')
-
-
+plt.title('Full Bathrooms vs. Sale Price')
 
 plt.tight_layout()
 plt.show()
 
 
-# In[100]:
+# In[71]:
 
 
 # Explore relationships between key features and house prices
 
-plt.figure(figsize=(12, 6))  # Increase the figure size for better visibility
+plt.figure(figsize=(12, 6)) 
 
-plt.subplot(1, 3, 1)  # 1 row, 4 columns, 1st subplot
+plt.subplot(1, 3, 1)  # 1 row, 3 columns, 1st subplot
 sns.scatterplot(x='BedroomAbvGr', y='SalePrice', data=Housing)
-plt.title('Bedrooms above grade vs. Sale Price')
+plt.title('Bedrooms Above Grade vs. Sale Price')
 
-plt.subplot(1, 3, 2)  # 1 row, 4 columns, 2nd subplot
+plt.subplot(1, 3, 2)  # 1 row, 3 columns, 2nd subplot
 sns.scatterplot(x='KitchenAbvGr', y='SalePrice', data=Housing)
-plt.title('Kitchens above grade vs. Sale Price')
+plt.title('Kitchens Above Grade vs. Sale Price')
 
-
-plt.subplot(1,3, 3)  # 1 row, 4 columns, 2nd subplot
+plt.subplot(1, 3, 3)  # 1 row, 3 columns, 3rd subplot
 sns.scatterplot(x='TotRmsAbvGrd', y='SalePrice', data=Housing)
-plt.title('Total rooms above grade vs. Sale Price')
-
-
+plt.title('Total Rooms Above Grade vs. Sale Price')
 
 plt.tight_layout()
 plt.show()
-
-
-# In[24]:
-
 
 plt.figure(figsize=(10, 6))
 sns.scatterplot(x='GrLivArea', y='SalePrice', data=Housing)
@@ -354,55 +293,78 @@ plt.ylabel('Price')
 plt.show()
 
 
-# In[108]:
+# In[72]:
 
 
 # Explore relationships between key features and house prices
 
-plt.figure(figsize=(12, 6))  # Increase the figure size for better visibility
+plt.figure(figsize=(12, 6))  
 
-plt.subplot(1, 1,1)  # 1 row, 4 columns, 1st subplot
+plt.subplot(1, 1, 1)  # 1 row, 1 column, 1st subplot
 sns.scatterplot(x='MiscVal', y='SalePrice', data=Housing)
-plt.title('Miscellaneous feature vs. Sale Price')
-
+plt.title('Miscellaneous Feature vs. Sale Price')
 
 plt.tight_layout()
 plt.show()
 
 
-# In[17]:
+# In[75]:
 
 
-# Create a new feature for price per square foot
-Housing['Price Per SqFt'] = Housing['SalePrice'] / Housing['LotArea']
+# Create new features
+Housing['Age'] = Housing['YrSold'] - Housing['YearBuilt']
+Housing['Remodeled'] = (Housing['YearRemodAdd'] != Housing['YearBuilt']).astype(int)
 
-# Create a new feature representing the property's age
-current_year = 2024                                    # Assuming the current year is 2024
-Housing['YrSold'] = current_year - Housing['YearBuilt']
-
-print(Housing['YrSold'])
+# Droping original features that are redundant
+Housing.drop(['YearBuilt', 'YearRemodAdd'], axis=1, inplace=True)
 
 
-# In[15]:
+# In[76]:
 
 
-# Converting 'YrSold' to datetime format
-Housing['YrSold'] = pd.to_datetime(Housing['YrSold'], format='%Y')
+Housing
+
+
+# In[77]:
+
 
 # Setting 'YrSold' as an index
 Housing.set_index('YrSold', inplace=True)
 
-# Ploting historical house prices
+
+# In[85]:
+
+
+# Plot the 'Age' feature in a time series
 plt.figure(figsize=(10, 6))
-Housing['SalePrice'].resample('A').mean().plot()
-plt.title('Historical House Prices')
+plt.plot(Housing.index, Housing['Age'], color='skyblue')
+plt.title('Age of Houses Over Time')
 plt.xlabel('Year Sold')
-plt.ylabel('Average Sale Price')
+plt.ylabel('Age (Years)')
+plt.grid(True)
+plt.show()
+
+# Plot the 'Remodeled' feature in a time series
+plt.figure(figsize=(10, 6))
+plt.plot(Housing.index, Housing['Remodeled'], color='salmon')
+plt.title('Remodeled Houses Over Time')
+plt.xlabel('Year Sold')
+plt.ylabel('Remodeled (0: No, 1: Yes)')
+plt.yticks([0, 1])
+plt.grid(True)
 plt.show()
 
 
-# In[25]:
+# In[ ]:
 
+
+
+
+
+# In[94]:
+
+
+#plotting customer requirements ( ameneties)
 
 plt.figure(figsize=(10, 6))
 sns.boxplot(x='PoolArea', y='SalePrice', data=Housing)
@@ -412,9 +374,10 @@ plt.ylabel('Price')
 plt.show()
 
 
-# In[26]:
+# In[90]:
 
 
+#plotting customer requirements ( ameneties)
 plt.figure(figsize=(10, 6))
 sns.boxplot(x='GarageCars', y='SalePrice', data=Housing)
 plt.title('Garage on House vs  Prices')
@@ -423,9 +386,12 @@ plt.ylabel('Price')
 plt.show()
 
 
-# In[27]:
 
 
+# In[91]:
+
+
+#plotting customer requirements ( ameneties)
 plt.figure(figsize=(20, 20))
 sns.boxplot(x='WoodDeckSF', y='SalePrice', data=Housing)
 plt.title('Wood deck area vs  Prices')
@@ -434,8 +400,12 @@ plt.ylabel('Price')
 plt.show()
 
 
-# In[30]:
 
+
+# In[92]:
+
+
+#plotting customer requirements ( ameneties)
 
 plt.figure(figsize=(25, 10))
 sns.boxplot(x='OpenPorchSF', y='SalePrice', data=Housing)
@@ -445,8 +415,12 @@ plt.ylabel('Price')
 plt.show()
 
 
-# In[29]:
 
+
+# In[93]:
+
+
+#plotting customer requirements ( ameneties)
 
 plt.figure(figsize=(25, 10))
 sns.boxplot(x='Fence', y='SalePrice', data=Housing)
@@ -456,9 +430,7 @@ plt.ylabel('Price')
 plt.show()
 
 
-# # Conclusion
-
-# In[21]:
+# In[96]:
 
 
 # Summarized insights with bold headings
@@ -496,6 +468,12 @@ Amenities Influence: Both physical (pools, garages, decks) and categorical (cent
 """
 
 print(summary)
+
+
+# In[ ]:
+
+
+
 
 
 # In[ ]:
